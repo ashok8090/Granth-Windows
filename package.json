@@ -1,0 +1,37 @@
+{
+  "name": "granth-prabandhan",
+  "productName": "Granth Prabandhan",
+  "version": "1.0.0",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {
+    "start": "electron .",
+    "dist": "electron-builder --win portable --x64"
+  },
+  "devDependencies": {
+    "electron": "33.4.11",
+    "electron-builder": "25.1.8"
+  },
+  "build": {
+    "appId": "com.wnm.granthprabandhan",
+    "productName": "Granth Prabandhan",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "web/**"
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        }
+      ],
+      "artifactName": "Granth-Prabandhan-1.0.0.exe",
+      "signAndEditExecutable": false
+    }
+  }
+}
