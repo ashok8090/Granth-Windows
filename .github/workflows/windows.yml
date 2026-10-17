@@ -1,0 +1,30 @@
+name: Windows installer
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npx electron-builder --win nsis --x64
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v1.0.0
+          name: ग्रंथ प्रबंधन Windows 1.0.0
+          files: release/Granth-Prabandhan-Setup-1.0.0.exe
+          body: |
+            Installer. Double-click, press Next, and ग्रंथ प्रबंधन opens from the Start Menu and the desktop.
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

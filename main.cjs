@@ -44,6 +44,7 @@ function createWindow() {
     minWidth: 900,
     minHeight: 640,
     title: "ग्रंथ प्रबंधन",
+    icon: path.join(__dirname, "icon.png"),
     autoHideMenuBar: true,
     backgroundColor: "#1a120c",
     webPreferences: {
