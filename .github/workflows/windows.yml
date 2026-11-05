@@ -1,4 +1,4 @@
-name: Windows installer
+name: Build Windows Desktop
 
 on:
   workflow_dispatch:
@@ -9,22 +9,49 @@ permissions:
   contents: write
 
 jobs:
-  installer:
+  build:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
-          node-version: 22
-          cache: npm
-      - run: npm ci
-      - run: npx electron-builder --win nsis --x64 --publish never
-      - uses: softprops/action-gh-release@v2
+          flutter-version: '3.35.0'
+          channel: stable
+          cache: true
+
+      - name: Enable Windows desktop
+        run: flutter config --enable-windows-desktop
+
+      - name: Get dependencies
+        run: flutter pub get
+
+      - name: Create Windows runner
+        run: flutter create --platforms=windows .
+
+      - name: Build Windows release
+        run: flutter build windows --release
+
+      - name: Package
+        shell: pwsh
+        run: |
+          Compress-Archive -Path build/windows/x64/runner/Release/* -DestinationPath Granth-Windows.zip -Force
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
         with:
-          tag_name: v1.0.0
-          name: ग्रंथ प्रबंधन Windows 1.0.0
-          files: release/Granth-Prabandhan-Setup-1.0.0.exe
+          name: Granth-Windows
+          path: Granth-Windows.zip
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: windows-v1.0.0
+          name: Granth Prabandhan Windows 1.0.0
+          files: Granth-Windows.zip
           body: |
-            Installer. Double-click, press Next, and ग्रंथ प्रबंधन opens from the Start Menu and the desktop.
+            Windows desktop build of ग्रंथ प्रबंधन.
+            Extract and run the .exe.
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
